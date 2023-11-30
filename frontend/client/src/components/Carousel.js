@@ -26,7 +26,7 @@ const Carousel = ({ width, height, images }) => {
   };
 
   return (
-    <div className="relative" style={{ width, height }}>
+    <div className="relative z-0" style={{ width, height }}>
       {images.map((image, index) => (
         <img
           key={index}

@@ -1,15 +1,6 @@
-import React from "react";
-import NavBar from "../components/Navbar";
-import AltBar from "../components/AltBar";
-import Carousel from "../components/Carousel";
-import ProductContainer from "../components/ProductContainer";
-import Cart from "../components/Cart";
+import CartCard from "./CardCard";
 
-const HomePage=()=>{
-    const images=[
-        "https://www.raymondgeddes.com/cdn/shop/articles/iStock-1311273895_1.jpg?v=1682319188",
-        "https://simplewordsoffaith.com/wp-content/uploads/2022/08/Back-to-school-Must-have-school-supplies.jpg"
-    ]
+const Cart=()=>{
     const products = [
         {
           id: 1,
@@ -35,20 +26,13 @@ const HomePage=()=>{
         // ...other products
       ];
     return(
-        <div className="w-[100vw] h-[100vh] relative">
-          <NavBar/>
-          <AltBar/>
-          <div className="h-[80vh] w-full overflow-y-auto">
-            <Carousel width="100vw" height="50dvh" images={images} />
-            <ProductContainer products={products} />
-
-          </div>
-          <Cart/>
-          
-          
+        <div className="fixed right-0 top-0 h-full w-[15%] z-100 bg-white pt-2 shadow-md">
+            <h1 className="w-full text-center">Shopping Cart</h1>
+            {products.map((product) => (
+                <CartCard key={product.id} product={product} />
+            ))}
 
         </div>
     )
 }
-
-export default HomePage
+export default Cart

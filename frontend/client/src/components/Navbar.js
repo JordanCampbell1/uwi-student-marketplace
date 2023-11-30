@@ -12,7 +12,7 @@ const NavBar = () => {
     };
 
     return (
-        <nav className="w-full border-b border-gray-200 bg-white">
+        <nav className="w-full h-[12vh] border-b border-gray-200 bg-white ">
             <div className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center">
                     <img src={logo} alt="Logo" className="h-12"/>
