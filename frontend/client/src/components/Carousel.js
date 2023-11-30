@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
+import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined';
 
 const Carousel = ({ width, height, images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -41,13 +43,16 @@ const Carousel = ({ width, height, images }) => {
         onClick={goToPrevious}
         className="absolute left-0 z-10 p-4"
       >
-        Previous
+        <ArrowBackIosNewOutlinedIcon/>
+        {/* Previous */}
       </button>
       <button
         onClick={goToNext}
         className="absolute right-0 z-10 p-4"
       >
-        Next
+        <ArrowForwardIosOutlinedIcon/>
+        {/* Next */}
+
       </button>
     </div>
   );

@@ -4,8 +4,20 @@ import AltBar from "../components/AltBar";
 import Carousel from "../components/Carousel";
 import ProductContainer from "../components/ProductContainer";
 import Cart from "../components/Cart";
+import { useState } from "react";
+import NavBarWithCart from "../components/NavBarWithCart";
 
 const HomePage=()=>{
+    // const [isCartVisible, setCartVisible] = useState(false);
+    // const [isClosing, setIsClosing] = useState(false);
+
+    // const handleCloseCart = () => {
+    //     setIsClosing(true);
+    //     setTimeout(() => {
+    //         setCartVisible(false);
+    //         setIsClosing(false);
+    //     }, 500); // This should match the duration of your animation
+    // };
     const images=[
         "https://www.raymondgeddes.com/cdn/shop/articles/iStock-1311273895_1.jpg?v=1682319188",
         "https://simplewordsoffaith.com/wp-content/uploads/2022/08/Back-to-school-Must-have-school-supplies.jpg"
@@ -36,16 +48,13 @@ const HomePage=()=>{
       ];
     return(
         <div className="w-[100vw] h-[100vh] relative">
-          <NavBar/>
-          <AltBar/>
+          <NavBarWithCart/>
           <div className="h-[80vh] w-full overflow-y-auto">
             <Carousel width="100vw" height="50dvh" images={images} />
             <ProductContainer products={products} />
 
           </div>
-          <Cart/>
-          
-          
+    
 
         </div>
     )

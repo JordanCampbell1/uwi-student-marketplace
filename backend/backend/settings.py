@@ -185,3 +185,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = 'base.User'
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 CORS_ORIGIN_ALLOW_ALL = True
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
