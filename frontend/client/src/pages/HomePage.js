@@ -6,46 +6,31 @@ import ProductContainer from "../components/ProductContainer";
 import Cart from "../components/Cart";
 import { useState } from "react";
 import NavBarWithCart from "../components/NavBarWithCart";
-
+import { useEffect } from "react";
 const HomePage=()=>{
-    // const [isCartVisible, setCartVisible] = useState(false);
-    // const [isClosing, setIsClosing] = useState(false);
+  const [products, setProducts] = useState([]);
 
-    // const handleCloseCart = () => {
-    //     setIsClosing(true);
-    //     setTimeout(() => {
-    //         setCartVisible(false);
-    //         setIsClosing(false);
-    //     }, 500); // This should match the duration of your animation
-    // };
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/products/'); // Replace with your API URL
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
     const images=[
         "https://www.raymondgeddes.com/cdn/shop/articles/iStock-1311273895_1.jpg?v=1682319188",
         "https://simplewordsoffaith.com/wp-content/uploads/2022/08/Back-to-school-Must-have-school-supplies.jpg"
     ]
-    const products = [
-        {
-          id: 1,
-          name: "Product 1",
-          description: "Description for product 1",
-          price: "$25.00",
-          imageUrl: "https://www.raymondgeddes.com/cdn/shop/articles/iStock-1311273895_1.jpg?v=1682319188",
-        },
-        {
-            id: 1,
-            name: "Product 1",
-            description: "Description for product 1",
-            price: "$25.00",
-            imageUrl: "https://www.raymondgeddes.com/cdn/shop/articles/iStock-1311273895_1.jpg?v=1682319188",
-          },
-          {
-            id: 1,
-            name: "Product 1",
-            description: "Description for product 1",
-            price: "$25.00",
-            imageUrl: "https://www.raymondgeddes.com/cdn/shop/articles/iStock-1311273895_1.jpg?v=1682319188",
-          },
-        // ...other products
-      ];
+    
     return(
         <div className="w-[100vw] h-[100vh] relative">
           <NavBarWithCart/>

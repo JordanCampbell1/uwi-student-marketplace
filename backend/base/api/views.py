@@ -7,7 +7,15 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 import json
 from django.contrib.auth import get_user_model
 from base.models import *
+from django.core.exceptions import ValidationError
+from .serializers import *
 import os
+import re
+from django.shortcuts import get_object_or_404
+from django.db.models import Q
+
+
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
@@ -29,38 +37,110 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 @api_view(['POST'])
-def upload_image(request):
+def register_user(request):
     if request.method == 'POST':
-        image = request.FILES.get('image')
-        project_id = request.POST.get('project_id')
-        print(project_id)
-        if image:
-            # Construct the filename using the project ID
-            filename = f"{project_id}.jpg"
+        try:
+            data = json.loads(request.body)
+            email = data.get('email')
+            first_name = data.get('first_name')
+            last_name = data.get('last_name')
+            studentID = data.get('studentID')
+            password = data.get('password')
 
-            # Determine the folder path
-            folder_path = os.path.join(settings.MEDIA_ROOT, f"project_{project_id}")
+            # Validate input
+            if not all([email, first_name, last_name, password]):
+                raise ValidationError('Missing required fields')
 
-            # Check if the folder exists and delete it if it does
-            if os.path.exists(folder_path):
-                for file in os.listdir(folder_path):
-                    file_path = os.path.join(folder_path, file)
-                    os.remove(file_path)
-                os.rmdir(folder_path)
+            # Create user
+            User = get_user_model()
+            user = User.objects.create_user(
+                email=email, 
+                password=password, 
+                first_name=first_name, 
+                last_name=last_name, 
+                studentID=studentID
+            )
 
-            # Save the new image with the specified filename
-            new_image = Image(image=image, project_id=project_id, name=filename)
-            new_image.save()
+            return JsonResponse({'message': 'User created successfully'}, status=201)
 
-            # Update project with image ID
-            try:
-                project = Project.objects.get(id=project_id)
-                project.image_id = new_image.id
-                project.save()
-                return JsonResponse({'image_id': new_image.id, 'message': 'Image uploaded successfully'})
-            except Project.DoesNotExist:
-                return JsonResponse({'error': 'Project not found'}, status=404)
-        else:
-            return JsonResponse({'error': 'No image found in request'}, status=400)
+        except ValidationError as e:
+            return JsonResponse({'error': str(e)}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': 'Something went wrong'}, status=500)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_product(request):
+    if request.method == 'POST':
+        try:
+            title = request.POST.get('title')
+            category_name = request.POST.get('type')
+            description = request.POST.get('description')
+            price_string = request.POST.get('price')
+
+            # Remove currency symbols and commas
+            cleaned_price = re.sub(r'[^\d.]', '', price_string)
+            price = Decimal(cleaned_price)
+
+            images = request.FILES.getlist('images')
+
+            # Fetch or create the Category instance
+            category, created = Category.objects.get_or_create(name=category_name)
+
+            # Create Product instance
+            product = Product(name=title, category=category, description=description, price=price, owner=request.user)
+            product.save()
+
+            # Save images
+            for image in images:
+                Image.objects.create(product=product, image=image)
+
+            return JsonResponse({'status': 'success', 'message': 'Product uploaded successfully'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+@api_view(['GET'])
+# @permission_classes([AllowAny])
+def list_products(request):
+    if request.method == 'GET':
+        products = Product.objects.all()
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_to_cart(request):
+    user = request.user
+    product_id = request.data.get('product_id')
+
+    if not product_id:
+        return JsonResponse({'error': 'Product ID is required'}, status=400)
+
+    product = get_object_or_404(Product, id=product_id)
+
+    # Get or create a cart for the user
+    cart, created = Cart.objects.get_or_create(user=user)
+
+    # Add the product to the cart
+    cart.products.add(product)
+
+    return JsonResponse({'message': 'Product added to cart'}, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_cart(request):
+    user = request.user
+    cart, created = Cart.objects.get_or_create(user=user)
+    serializer = CartSerializer(cart)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def search_products(request):
+    query = request.GET.get('query', '')
+    products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)

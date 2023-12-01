@@ -3,28 +3,65 @@ import { useNavigate } from "react-router-dom";
 import logo from '../images/logo.png'; // Adjust the path as needed
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
+import { useState } from "react";
+import { useEffect } from "react";
+import debounce from 'lodash.debounce'; 
+
 const NavBar = ({ toggleCart }) => {
     const navigate = useNavigate();
+    const [searchResults, setSearchResults] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isFocused, setIsFocused] = useState(false);
 
-    const handleSearch = (event) => {
-        event.preventDefault();
-        const searchTerm = event.target.elements.search.value;
-        navigate(`/search?query=${encodeURIComponent(searchTerm)}`);
+
+    // Debounce function to limit the number of API calls
+    const debouncedSearch = debounce(async (searchTerm) => {
+        if (searchTerm) {
+            const response = await fetch(`http://localhost:8000/api/search-products/?query=${encodeURIComponent(searchTerm)}`);
+            if (response.ok) {
+                const data = await response.json();
+                setSearchResults(data);
+            } else {
+                console.error('Search failed');
+            }
+        } else {
+            setSearchResults([]);
+        }
+    }, 300); // 300 ms delay
+
+    useEffect(() => {
+        debouncedSearch(searchTerm);
+        // Cleanup function to cancel debounced calls
+        return () => debouncedSearch.cancel();
+    }, [searchTerm]);
+
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
+    const handleFocus = () => {
+        setIsFocused(true);
     };
 
+    const handleBlur = () => {
+        // Delay hiding results to allow interaction with them
+        setTimeout(() => setIsFocused(false), 200);
+    }
     return (
-        <nav className="w-full h-[12vh] border-b border-gray-200 bg-white ">
+        <nav className="w-full h-[12vh] border-b border-gray-200 bg-white relative ">
             <div className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center">
                     <img src={logo} alt="Logo" className="h-12"/>
                     <span className="font-bold text-xl ml-2">UWI STUDENT MARKETPLACE</span>
                 </div>
-                <form onSubmit={handleSearch} className="flex-1 max-w-xl relative">
+                <form className="flex-1 max-w-xl relative">
                     <input
                         type="search"
                         name="search"
                         placeholder="Search for items, categories, etc."
                         className="w-full h-10 pl-4 pr-10 py-2 border rounded-full text-sm leading-5 bg-gray-100 focus:outline-none focus:bg-white focus:border-red-300"
+                        onChange={handleSearchChange}
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
                     />
                     <button
                         type="submit"
@@ -46,6 +83,15 @@ const NavBar = ({ toggleCart }) => {
                     </button>
                 </div>
             </div>
+            {isFocused && searchTerm && (
+                <div className="absolute bottom-0 w-full bg-white z-100">
+                    <div className="ml-[40%] border border-black w-[40%]">
+                        {searchResults.map(product => (
+                            <div key={product.id}>{product.name}</div> // Customize as needed
+                        ))}
+                    </div>
+                </div>
+            )}
         </nav>
     )
 }

@@ -18,7 +18,7 @@ const NavBarWithCart = () => {
     const toggleCart = () => setCartVisible(!isCartVisible);
 
     return (
-        <div>
+        <div className='w-full'>
             <NavBar toggleCart={toggleCart} />
             <AltBar/>
             {isCartVisible && <Cart hideCart={handleCloseCart} isClosing={isClosing} />}

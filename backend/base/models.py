@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
-
+from decimal import Decimal
 # Custom User Manager
 class CustomUserManager(BaseUserManager):
     def _create_user(self, email, password, **extra_fields):
@@ -31,12 +31,16 @@ class CustomUserManager(BaseUserManager):
 
         return self._create_user(email, password, **extra_fields)
 
+def user_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'user_{0}/{1}'.format(instance.id, filename)
 # User Model
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(db_index=True, max_length=255, unique=True)
     first_name = models.CharField(max_length=250)
     last_name = models.CharField(max_length=250)
     studentID = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    profile_image = models.ImageField(upload_to=user_directory_path, null=True, blank=True)
     isVerified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -57,27 +61,25 @@ class Category(models.Model):
 
 # Product Model
 class Product(models.Model):
-    id = models.AutoField(primary_key=True)
     owner = models.ForeignKey(User, related_name='owned_products', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     description = models.TextField()
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     category = models.ForeignKey(Category, related_name='products', on_delete=models.SET_NULL, null=True)
     condition = models.CharField(max_length=255)
     dateListed = models.DateTimeField(auto_now_add=True)
-    image_id = models.IntegerField(null=True, blank=True)
-    
-    def get_image_url(self):
-        if self.image_id:
-            return get_image_path(None, f"{self.image_id}.jpg")
-        else:
-            return None
-    
-    
-    
+
+    def get_image_urls(self):
+        return [image.image.url for image in self.images.all()]
+
 def get_image_path(instance, filename):
-    filename = (instance.product_id) + '.jpg'
-    return f"project_{instance.product_id}/{filename or 'default.jpg'}"
+    # This function will generate an upload path specific to the product
+    return f'products/{instance.product.id}/{filename}'
+
+class Image(models.Model):
+    product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE, null=True)
+    image = models.ImageField(upload_to=get_image_path)
+
 
 
 # Transaction Model
@@ -100,8 +102,3 @@ class Review(models.Model):
 class Cart(models.Model):
     user = models.OneToOneField(User, related_name='cart', on_delete=models.CASCADE)
     products = models.ManyToManyField(Product, related_name='carts')
-
-class Image(models.Model):
-    product_id = models.IntegerField(null=True, blank=True)
-    name = models.CharField(max_length=255, blank=True, null = True)
-    image = models.ImageField(upload_to=get_image_path)
