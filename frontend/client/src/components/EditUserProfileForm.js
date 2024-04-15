@@ -68,7 +68,7 @@ const EditUserProfileForm = () => {
               </div>
             </form>
           </div>
-         </div> 
+    </div> 
   )
       
 };

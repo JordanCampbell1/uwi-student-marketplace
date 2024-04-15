@@ -42,7 +42,7 @@ const Signup = () => {
             }
 
             // Handle successful signup here
-            navigate('/dashboard'); // Redirect to dashboard or login page after signup
+            navigate('/login'); // Redirect to dashboard or login page after signup
         } catch (err) {
             setError(err.message);
         }
@@ -51,8 +51,8 @@ const Signup = () => {
     return (
         <div className="h-screen w-screen flex items-center justify-center bg-gray-100 hide-scrollbar">
             <div className="h-auto w-[50%] bg-white shadow-xl rounded-lg py-10 flex flex-col items-center space-y-6">
-                <div className="w-full flex flex-col items-center justify-center">
-                    <img src={logo} alt="Logo" className="h-20 mb-2"/>
+                <div className="w-full flex flex-col items-center justify-center cursor-pointer" >
+                    <img src={logo} alt="Logo" className="h-20 mb-2" />
                     <h1 className="text-xl font-bold text-gray-700">UWI STUDENT MARKETPLACE SIGNUP</h1>
                 </div>
                 <form className="w-full px-16 flex flex-col items-center space-y-4"  onSubmit={handleSignup}>

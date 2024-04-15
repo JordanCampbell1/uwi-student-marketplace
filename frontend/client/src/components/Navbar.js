@@ -1,18 +1,17 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import logo from '../images/logo.png'; // Adjust the path as needed
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
-import { useState } from "react";
-import { useEffect } from "react";
-import debounce from 'lodash.debounce'; 
+import debounce from 'lodash.debounce';
 
 const NavBar = ({ toggleCart }) => {
     const navigate = useNavigate();
     const [searchResults, setSearchResults] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [isFocused, setIsFocused] = useState(false);
-
+    const [showDropdown, setShowDropdown] = useState(false);
+    const dropdownRef = useRef(null);
 
     // Debounce function to limit the number of API calls
     const debouncedSearch = debounce(async (searchTerm) => {
@@ -27,17 +26,30 @@ const NavBar = ({ toggleCart }) => {
         } else {
             setSearchResults([]);
         }
-    }, 300); // 300 ms delay
+    }, 300);
 
     useEffect(() => {
         debouncedSearch(searchTerm);
+
         // Cleanup function to cancel debounced calls
         return () => debouncedSearch.cancel();
     }, [searchTerm]);
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
     };
+
     const handleFocus = () => {
         setIsFocused(true);
     };
@@ -45,15 +57,16 @@ const NavBar = ({ toggleCart }) => {
     const handleBlur = () => {
         // Delay hiding results to allow interaction with them
         setTimeout(() => setIsFocused(false), 200);
-    }
+    };
+
     return (
-        <nav className="w-full h-[12vh] border-b border-gray-200 bg-white relative ">
+        <nav className="w-full h-[12vh] border-b border-gray-200 bg-white relative">
             <div className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center">
-                    <img src={logo} alt="Logo" className="h-12"/>
+                <div className="flex items-center cursor-pointer " onClick={()=>navigate('/')}>
+                    <img src={logo} alt="Logo" className="h-12" />
                     <span className="font-bold text-xl ml-2">UWI STUDENT MARKETPLACE</span>
                 </div>
-                <form className="flex-1 max-w-xl relative">
+                <form className="flex-1 max-w-xl relative" onSubmit={(e) => e.preventDefault()}>
                     <input
                         type="search"
                         name="search"
@@ -62,38 +75,49 @@ const NavBar = ({ toggleCart }) => {
                         onChange={handleSearchChange}
                         onFocus={handleFocus}
                         onBlur={handleBlur}
+                        autoComplete="off"
                     />
-                    <button
-                        type="submit"
-                        className="absolute right-2 top-0 mt-2 mr-4"
-                    >
-                        {/* Search Icon */}
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    {/* Search Icon */}
+                    <button type="submit" className="absolute right-2 top-0 mt-2 mr-4">
+                        {/* Icon Component */}
                     </button>
                 </form>
                 <div className="flex items-center gap-4">
-                    {/* Profile Icon */}
-                    <button onClick={() => navigate('/profile')} className="focus:outline-none">
-                        <PersonOutlinedIcon/>                   
-                    </button>
+                    {/* Profile Icon with Dropdown */}
+                    <div className="relative focus:outline-none">
+                        <button onClick={() => setShowDropdown(!showDropdown)}>
+                            <PersonOutlinedIcon />
+                        </button>
+                        {showDropdown && (
+                            <div ref={dropdownRef} className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-20">
+                                <a onClick={() => navigate('/edit')} className="block px-4 py-2 text-sm capitalize text-gray-700 hover:bg-blue-500 hover:text-white">
+                                    Edit Account
+                                </a>
+                                <a onClick={() => navigate('/list')} className="block px-4 py-2 text-sm capitalize text-gray-700 hover:bg-blue-500 hover:text-white">
+                                    List Item
+                                </a>
+                                <a onClick={() => navigate('/my-listings')} className="block px-4 py-2 text-sm capitalize text-gray-700 hover:bg-blue-500 hover:text-white">
+                                    My Listings
+                                </a>
+                                {/* Additional dropdown items can be added here */}
+                            </div>
+                        )}
+                    </div>
                     {/* Cart Icon */}
                     <button onClick={toggleCart} className="relative focus:outline-none">
-                        <ShoppingCartOutlinedIcon/>
-                        <span className="absolute right-0 bottom-0 rounded-full bg-red-600 w-4 h-4 top right p-0 m-0 text-white font-mono text-xs flex items-center justify-center">3</span>
+                        <ShoppingCartOutlinedIcon />
+                        {/* Notification Badge */}
                     </button>
                 </div>
             </div>
+            {/* Search Results */}
             {isFocused && searchTerm && (
-                <div className="absolute bottom-0 w-full bg-white z-100">
-                    <div className="ml-[40%] border border-black w-[40%]">
-                        {searchResults.map(product => (
-                            <div key={product.id}>{product.name}</div> // Customize as needed
-                        ))}
-                    </div>
+                <div className="absolute bottom-0 w-full bg-white z-10">
+                    {/* Search Results Component */}
                 </div>
             )}
         </nav>
-    )
+    );
 }
 
 export default NavBar;

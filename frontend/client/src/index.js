@@ -6,7 +6,8 @@ import {createRoot} from 'react-dom/client';
 import {createStore,combineReducers} from 'redux'
 import { User } from './utils/reducers';
 import { AuthTokens } from './utils/reducers';
-const allReducers=combineReducers({User,AuthTokens})
+import { currentProduct } from './utils/reducers';
+const allReducers=combineReducers({User,AuthTokens,currentProduct})
 
 
 // const root = ReactDOM.createRoot(document.getElementById('root'));

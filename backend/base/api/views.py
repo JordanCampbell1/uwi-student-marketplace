@@ -104,12 +104,13 @@ def upload_product(request):
     return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
 @api_view(['GET'])
-# @permission_classes([AllowAny])
 def list_products(request):
     if request.method == 'GET':
+        # Exclude products where the logged-in user is the owner
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
+    
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_to_cart(request):
@@ -144,3 +145,96 @@ def search_products(request):
     products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_info(request):
+    user = request.user
+    user_data = {
+        'email': user.email,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'studentID': user.studentID,
+        # Assuming the User model has a method to get the profile image URL
+        'profile_image': request.build_absolute_uri(user.profile_image.url) if user.profile_image else None,
+    }
+    return Response(user_data)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_user(request):
+    user = request.user
+    data = request.data
+
+    # Update user fields
+    user.first_name = data.get('firstName', user.first_name)
+    user.last_name = data.get('lastName', user.last_name)
+    user.email = data.get('email', user.email)
+    user.studentID = data.get('studentID', user.studentID)
+    # Handle other fields if necessary
+
+    user.save()
+    return Response({'message': 'User updated successfully'})
+
+# Don't forget to add the URL pattern in urls.py
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_account(request):
+    user = request.user
+    try:
+        user.delete()
+        return JsonResponse({'message': 'Account deleted successfully'}, status=200)
+    except:
+        return JsonResponse({'error': 'Error deleting account'}, status=500)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_products(request):
+    if request.method == 'GET':
+        # Get products owned by the logged-in user
+        products = Product.objects.filter(owner=request.user)
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
+
+api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def edit_product(request, product_id):
+    user = request.user
+
+    # Get the product to be edited
+    product = get_object_or_404(Product, id=product_id, owner=user)
+
+    if request.method == 'GET':
+        # Display the form for editing the product
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        # Handle the form submission to update the product
+        try:
+            title = request.data.get('title')
+            category_name = request.data.get('type')
+            description = request.data.get('description')
+            price_string = request.data.get('price')
+
+            # Remove currency symbols and commas
+            cleaned_price = re.sub(r'[^\d.]', '', price_string)
+            price = Decimal(cleaned_price)
+
+            # Update product details
+            product.name = title
+            product.description = description
+            product.price = price
+
+            # Update category (assuming category name is changed)
+            category, created = Category.objects.get_or_create(name=category_name)
+            product.category = category
+
+            product.save()
+
+            return JsonResponse({'status': 'success', 'message': 'Product updated successfully'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
