@@ -98,8 +98,8 @@ const ProductDescriptionForm = () => {
   return (
     <div className="w-3/4 p-2 py-4">
       <form className="grid grid-cols-1 md:grid-cols-2 gap-4 " onSubmit={handleSubmit}>
-        <InputField label="Product title" name="title" type="text" placeholder="Mercedes S Class suspension" onChange={handleInputChange} />
-        <SelectField label="Category" name="type" options={['AMG Suspension', 'Standard Suspension']} onChange={handleInputChange} />
+        <InputField label="Product title" name="title" type="text" placeholder="Product name" onChange={handleInputChange} />
+        <SelectField label="Category" name="type" options={['School Resource', 'Other']} onChange={handleInputChange} />
         {/* <InputField label="Product sub title" name="subtitle" type="text" /> */}
        
         <SelectField label="Condition" name="state" options={['New', 'Used']} onChange={handleInputChange}/>

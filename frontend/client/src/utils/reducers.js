@@ -27,3 +27,18 @@ export const setAuthTokens=(data)=>{
         data
     }
 }
+
+export const currentProduct=(state=false,action)=>{
+    switch(action.type){
+        case 'SetProduct':
+            return action.data
+        default:
+            return state
+    }
+}
+export const setProduct=(data)=>{
+    return{
+        type:'SetProduct',
+        data
+    }
+}

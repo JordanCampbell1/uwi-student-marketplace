@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-
-const InputField = ({ label, name, type, placeholder, isCurrency, onChange, width }) => {
-  const [inputValue, setInputValue] = useState('');
+import { useEffect } from 'react';
+const InputField = ({ label, name, type, placeholder, isCurrency, onChange, width, value }) => {
+  // const [inputValue, setInputValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const [inputValue, setInputValue] = useState(value || '');
+
 
   // Function to format the input value as currency for display
   const formatCurrencyDisplay = (value) => {
@@ -42,7 +44,10 @@ const InputField = ({ label, name, type, placeholder, isCurrency, onChange, widt
 
   // Determine the width class based on the prop
   const widthClass = width ? width : 'w-full';
-
+ // Update state when value prop changes
+ useEffect(() => {
+  setInputValue(value || '');
+}, [value]);
   return (
     <div>
       <label htmlFor={name} className="block text-sm font-medium text-gray-700">
@@ -56,19 +61,21 @@ const InputField = ({ label, name, type, placeholder, isCurrency, onChange, widt
           className={`p-2 mt-1 block ${widthClass} rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm`}
           placeholder={placeholder}
           onChange={onChange}
+          value={value}
         ></textarea>
       ) : (
         <input
-          type={type}
-          name={name}
-          id={name}
-          className={`mt-1 block ${widthClass} rounded-md border-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2 px-2`}
-          placeholder={placeholder}
-          value={isCurrency && !isFocused ? formatCurrencyDisplay(inputValue) : inputValue}
-          onChange={handleChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-        />
+        type={type}
+        name={name}
+        id={name}
+        className={`mt-1 block ${widthClass} rounded-md border-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2 px-2`}
+        placeholder={placeholder}
+        value={isCurrency ? formatCurrencyDisplay(inputValue) : inputValue}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+      />
+      
       )}
     </div>
   );
