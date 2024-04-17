@@ -64,7 +64,7 @@ const NavBar = ({ toggleCart }) => {
             <div className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center cursor-pointer " onClick={()=>navigate('/')}>
                     <img src={logo} alt="Logo" className="h-12" />
-                    <span className="font-bold text-xl ml-2">UWI STUDENT MARKETPLACE</span>
+                    {/* <span className="font-bold text-xl ml-2">UWI STUDENT MARKETPLACE</span> */}
                 </div>
                 <form className="flex-1 max-w-xl relative" onSubmit={(e) => e.preventDefault()}>
                     <input
@@ -80,6 +80,7 @@ const NavBar = ({ toggleCart }) => {
                     {/* Search Icon */}
                     <button type="submit" className="absolute right-2 top-0 mt-2 mr-4">
                         {/* Icon Component */}
+                        Search
                     </button>
                 </form>
                 <div className="flex items-center gap-4">

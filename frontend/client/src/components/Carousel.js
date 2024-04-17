@@ -41,14 +41,14 @@ const Carousel = ({ width, height, images }) => {
       ))}
       <button
         onClick={goToPrevious}
-        className="absolute left-0 z-10 p-4"
+        className="absolute left-0 z-10 p-4 h-[100%] flex items-center"
       >
-        <ArrowBackIosNewOutlinedIcon/>
+        <ArrowBackIosNewOutlinedIcon/> 
         {/* Previous */}
       </button>
       <button
         onClick={goToNext}
-        className="absolute right-0 z-10 p-4"
+        className="absolute right-0 z-10 p-4 h-[100%] flex items-center"
       >
         <ArrowForwardIosOutlinedIcon/>
         {/* Next */}
