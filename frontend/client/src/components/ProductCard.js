@@ -31,19 +31,19 @@ const ProductCard = ({ product }) => {
     navigate(`/products/${product.id}`); // Navigate to product details
   };
   return (
-    <div className="flex flex-col items-center bg-white rounded-lg border shadow-md hover:bg-gray-100 w-64 p-4"> {/* Fixed width */}
+    <div className="flex flex-col items-center bg-white rounded-lg border border-black shadow-md hover:bg-gray-100 w-64 p-4"> {/* Fixed width */}
       <img 
-        className="object-cover w-full h-48 rounded-t-lg"  // Fixed height for images
+        className="object-contain w-full h-48 rounded-t-lg"  // Fixed height for images
         src={imageUrl} 
         alt={product.name} 
         onClick={goToProductDetails}  
       />
       <div className="p-2 w-full">
         <span className="text-md font-semibold text-gray-900 mb-4">{formattedPrice}</span>
-        <h5 className="mb-4 text-lg tracking-tight text-gray-900 overflow-ellipsis overflow-hidden whitespace-nowrap">{product.name}</h5> {/* Truncate long names */}
+        <h5 className="mb-3 text-lg tracking-tight text-gray-900 overflow-ellipsis overflow-hidden whitespace-nowrap">{product.name}</h5> {/* Truncate long names */}
         {/* <p className="mb-3 font-normal text-gray-700 line-clamp-3">{product.description}</p> Limit description lines */}
         
-        <button onClick={() => addProductToCart(product.id)} className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-full py-2.5 text-center">Add to cart</button>
+        <button onClick={() => addProductToCart(product.id)} className="text-white bg-red-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-full py-2.5 text-center">Add to cart</button>
       </div>
     </div>
   );

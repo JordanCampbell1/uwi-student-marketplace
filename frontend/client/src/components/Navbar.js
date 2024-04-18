@@ -3,10 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../images/logo.png'; // Adjust the path as needed
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
+import MenuIcon from '@mui/icons-material/Menu'; 
 import debounce from 'lodash.debounce';
+import { useDispatch } from 'react-redux';
 
 const NavBar = ({ toggleCart }) => {
     const navigate = useNavigate();
+    const dispatch=useDispatch()
     const [searchResults, setSearchResults] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [isFocused, setIsFocused] = useState(false);
@@ -20,11 +23,13 @@ const NavBar = ({ toggleCart }) => {
             if (response.ok) {
                 const data = await response.json();
                 setSearchResults(data);
+                dispatch({type:'setResults',data})
             } else {
                 console.error('Search failed');
             }
         } else {
             setSearchResults([]);
+            dispatch({ type: 'setResults', data: false });
         }
     }, 300);
 
@@ -47,7 +52,11 @@ const NavBar = ({ toggleCart }) => {
     }, []);
 
     const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value);
+        const term = event.target.value;
+        setSearchTerm(term)
+        if (term === '') {
+            dispatch({ type: 'setResults', data: false }); // Dispatch false immediately when input is cleared
+        }
     };
 
     const handleFocus = () => {
@@ -66,6 +75,7 @@ const NavBar = ({ toggleCart }) => {
                     <img src={logo} alt="Logo" className="h-12" />
                     {/* <span className="font-bold text-xl ml-2">UWI STUDENT MARKETPLACE</span> */}
                 </div>
+                
                 <form className="flex-1 max-w-xl relative" onSubmit={(e) => e.preventDefault()}>
                     <input
                         type="search"

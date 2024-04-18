@@ -7,7 +7,8 @@ import {createStore,combineReducers} from 'redux'
 import { User } from './utils/reducers';
 import { AuthTokens } from './utils/reducers';
 import { currentProduct } from './utils/reducers';
-const allReducers=combineReducers({User,AuthTokens,currentProduct})
+import { queryResults } from './utils/reducers';
+const allReducers=combineReducers({User,AuthTokens,currentProduct,queryResults})
 
 
 // const root = ReactDOM.createRoot(document.getElementById('root'));

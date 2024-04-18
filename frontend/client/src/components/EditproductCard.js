@@ -36,15 +36,14 @@ const EditProductCard = ({ product }) => {
   return (
     <div className="flex flex-col items-center bg-white rounded-lg border shadow-md hover:bg-gray-100 w-64"> {/* Fixed width */}
       <img 
-        className="object-cover w-full h-48 rounded-t-lg"  // Fixed height for images
+        className="object-contain w-full h-48 rounded-t-lg"  // Fixed height for images
         src={imageUrl} 
         alt={product.name} 
       />
       <div className="p-2 w-full">
-        <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 overflow-ellipsis overflow-hidden whitespace-nowrap">{product.name}</h5> {/* Truncate long names */}
-        <p className="mb-3 font-normal text-gray-700 line-clamp-3">{product.description}</p> {/* Limit description lines */}
-        <span className="text-xl font-bold text-gray-900 mb-2">{formattedPrice}</span>
-        <button className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-full py-2.5 text-center" onClick={navigateToEdit}>Edit Product</button>
+      <span className="text-md font-semibold text-gray-900 mb-4">{formattedPrice}</span>
+        <h5 className="mb-3 text-lg tracking-tight text-gray-900 overflow-ellipsis overflow-hidden whitespace-nowrap">{product.name}</h5> {/* Truncate long names */}
+        <button className="text-white bg-red-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm w-full py-2.5 text-center" onClick={navigateToEdit}>Edit Product</button>
       </div>
     </div>
   );

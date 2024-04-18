@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import NavBar from "./Navbar";
 import Cart from "./Cart";
 import AltBar from './AltBar';
+import { useNavigate } from 'react-router-dom';
 
 const NavBarWithCart = () => {
     const [isCartVisible, setCartVisible] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
+    const navigate= useNavigate()
 
     const handleCloseCart = () => {
         setIsClosing(true);
