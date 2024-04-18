@@ -7,6 +7,9 @@
   padding: 0;
   box-sizing: border-box;
 }
+*::-webkit-scrollbar{
+  display: none;
+}
 
 @keyframes slideInFromRight {
   from {
@@ -41,4 +44,25 @@
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none; /* for Chrome, Safari, and Opera */
+}
+
+.star-rating {
+  font-size: 24px;
+  unicode-bidi: bidi-override;
+  direction: rtl; /* Reverse direction for proper filling of stars */
+}
+.star-rating > span {
+  display: inline-block;
+  position: relative;
+  width: 1.1em;
+}
+.star-rating > span:hover,
+.star-rating > span:hover ~ span {
+  color: transparent; /* Optional: Adds a hover effect to select rating */
+}
+.star-rating > span:before {
+  content: "★";
+  position: absolute;
+  left: 0;
+  color: gold;
 }

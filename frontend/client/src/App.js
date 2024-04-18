@@ -15,7 +15,8 @@ import EditUserPage from './pages/EditUserPage';
 import MyListings from './pages/MyListings';
 import EditProductPage from './pages/EditProductPage';
 import PrivateRoute from './PrivateRoute';
-
+import ProductDetails from './pages/ProductDetails';
+import ProductSearch from './pages/ProductSearch';
 
 function App() {
   const dispatch = useDispatch();
@@ -42,7 +43,8 @@ function App() {
           <Route path="/edit" element={<PrivateRoute><EditUserPage /></PrivateRoute>} />
           <Route path="/my-listings" element={<PrivateRoute><MyListings /></PrivateRoute>} />    
           <Route path="/edit-listing" element={<PrivateRoute><EditProductPage /></PrivateRoute>} />    
-          
+          <Route path="/products/:productId" element={<ProductDetails/>} />
+          <Route path="/products/search/:searchQuery" element={<ProductSearch/>} />
           {/* Add other routes here */}
         </Routes>
       </div>

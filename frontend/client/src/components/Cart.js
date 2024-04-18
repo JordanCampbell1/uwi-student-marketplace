@@ -13,8 +13,11 @@ const Cart=({ hideCart, isClosing })=>{
               try {
                   const response = await fetch('http://127.0.0.1:8000/api/cart/', { // Replace with your actual API endpoint
                       method: 'GET',
+                      
                       headers: {
+                        
                         'Authorization':'Bearer '+ String(AuthTokens.access)
+
                       },
                   });
 

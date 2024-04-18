@@ -42,3 +42,11 @@ export const setProduct=(data)=>{
         data
     }
 }
+export const queryResults=(state=false,action)=>{
+    switch(action.type){
+        case 'setResults':
+            return action.data
+        default:
+            return state
+    }
+}
